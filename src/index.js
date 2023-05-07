@@ -4,7 +4,7 @@ const app = express();
 const port = 3000;
 
 const usuarioRoutes = require('./routes/usuarios');
-const mascotaRoutes = require('./routes/mascotas');
+
 
 const mongoose = require("mongoose");
 require('dotenv').config();
@@ -17,7 +17,7 @@ app.use(parser.json()); // transforma los datos a formato JSON
 
 //Gestión de las rutas usando el middleware
 app.use('/api/usuarios', usuarioRoutes);
-app.use('/api/mascotas', mascotaRoutes);
+
 
 //Conexión a la base de datos
 mongoose
