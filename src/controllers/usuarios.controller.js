@@ -33,6 +33,10 @@ usuarioCtrl.actualizarUsuario = async (req, res) => {
   res.json({ status: "Usuario actualizado." });
 };
 
-usuarioCtrl.borrarUsuario = async (req, res) => {};
+usuarioCtrl.borrarUsuario = async (req, res) => {
+  const { id } = req.params;
+  await usuario.findByIdAndDelete(id);
+  res.send("Usuario eliminado.");
+};
 
 module.exports = usuarioCtrl;
