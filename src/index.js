@@ -1,31 +1,28 @@
-const parser = require("body-parser");
-const express = require('express');
+const express = require("express");
+const morgan = require("morgan");
+//Pedimos la conexión a la base de datos
+const { mongoose } = require("./database");
 const app = express();
-const port = 3000;
 
-const usuarioRoutes = require('./routes/usuarios');
+/*
+Configuraciones del servidor
+*/
+app.set("port", process.env.port || 3000);
 
+/* Middlewares: Conversores de datos */
+//Morgan para ver las peticiones que recibimos
+app.use(morgan("dev"));
+//express.json para entender archivos json
+app.use(express.json());
 
-const mongoose = require("mongoose");
-require('dotenv').config();
+/* 
+Rutas 
+*/
+app.use("/api/usuarios", require("./routes/usuarios.routes"));
 
-// Añadir esta línea para prepararte para el cambio en la versión 7 de Mongoose
-mongoose.set('strictQuery', false);
-
-app.use(parser.urlencoded({ extended: false })); //permite leer los datos que vienen en la petición
-app.use(parser.json()); // transforma los datos a formato JSON
-
-//Gestión de las rutas usando el middleware
-app.use('/api/usuarios', usuarioRoutes);
-
-
-//Conexión a la base de datos
-mongoose
-    .connect(process.env.MONGODB_URI + "/petfood", { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log("Conexión exitosa"))
-    .catch((error) => console.log(error));
-
-//Conexión al puerto
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
+/*
+Inicianco el servidor
+*/
+app.listen(app.get("port"), () => {
+  console.log("Server listen on port: ", app.get("port"));
 });
