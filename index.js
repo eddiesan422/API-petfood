@@ -1,12 +1,17 @@
-const express = require('express');
-const conectarDB = require('./config/db');
+const express = require("express");
+const { mongoose } = require("./database");
+
 const app = express();
 
+//SETTINGS
+app.set("port", process.env.PORT || 3000);
 
-// Conectar a la base de datos
-conectarDB();
-app.use(express.json({extended: true}));
-app.use('/api/usuarios', require('./routes/usuario'));
+//MIDDLEWARES:
+app.use(express.json());
 
+//ROUTES:
+app.use("/api/users", require("./routes/user.routes"));
 
-app.listen(3000, () => console.log('Server corriendo en port 3000'));
+app.listen(app.get("port"), () => {
+  console.log("Server on port: ", app.get("port"));
+});

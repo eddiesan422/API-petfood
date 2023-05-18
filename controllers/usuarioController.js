@@ -1,19 +1,28 @@
-const Usuario = require('../models/Usuario');
+const userCtrl = {};
+const User = require("../models/User");
 
-exports.obtenerUsuario = async (req, res) => {
-  try {
-    const usuario = await Usuario.findById(req.params.id);
-
-    if (!usuario) {
-      return res.status(404).json({ error: 'Usuario no encontrado' });
-    }
-
-    return res.status(200).json(usuario);
-  } catch (error) {
-    console.error('Error al obtener el usuario:', error);
-    return res.status(500).json({ error: 'Error al obtener el usuario' });
-  }
+//Controllers
+userCtrl.createUser = async (req, res) => {
+  const userData = req.body;
+  const newUser = new User(userData);
+  const savedUser = await newUser.save();
+  res.json({
+    status: "User saved",
+  });
 };
+
+userCtrl.getUsers = async (req, res) => {
+  const users = await User.find();
+  res.json(users);
+};
+
+userCtrl.getUser = async (req, res) => {
+  const { id } = req.params;
+  const UserById = await User.findById(id);
+  res.json(UserById);
+};
+
+/*
 exports.iniciarSesion = async (req, res) => {
   try {
     const { email, password } = req.body; // Obtener el correo electrónico y la contraseña del cuerpo de la solicitud
@@ -39,22 +48,6 @@ exports.iniciarSesion = async (req, res) => {
     return res.status(500).json({ error: "Error al iniciar sesión" });
   }
 };
+*/
 
-exports.crearUsuario = async (req, res) => {
-  try {
-    // Obtener los datos del usuario desde el cuerpo de la solicitud (req.body)
-    const userData = req.body;
-
-    // Crear una instancia del modelo Usuario con los datos proporcionados
-    const nuevoUsuario = new Usuario(userData);
-
-    // Guardar el usuario en la base de datos
-    const usuarioGuardado = await nuevoUsuario.save();
-
-    console.log("Usuario registrado exitosamente:", usuarioGuardado);
-    return res.status(200).json(usuarioGuardado);
-  } catch (error) {
-    console.error("Error al registrar el usuario:", error);
-    return res.status(500).json({ error: "Error al registrar el usuario" });
-  }
-};
+module.exports = userCtrl;
