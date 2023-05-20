@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const { mongoose } = require("./database");
 
 const app = express();
@@ -8,6 +9,7 @@ app.set("port", process.env.PORT || 3000);
 
 //MIDDLEWARES:
 app.use(express.json());
+app.use(cors());
 
 //ROUTES:
 app.use("/api/users", require("./routes/user.routes"));

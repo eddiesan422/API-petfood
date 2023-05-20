@@ -22,6 +22,15 @@ userCtrl.getUser = async (req, res) => {
   res.json(UserById);
 };
 
+userCtrl.receiveDetectionData = (req, res) => {
+  const detectionData = req.body;
+  console.log("Datos de detección recibidos:", detectionData[0].label);
+
+  res
+    .status(200)
+    .json({ message: "Datos de detección recibidos correctamente" });
+};
+
 /*
 exports.iniciarSesion = async (req, res) => {
   try {
