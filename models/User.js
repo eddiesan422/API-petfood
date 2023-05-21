@@ -3,32 +3,32 @@ const { Schema } = mongoose;
 
 const feedingScheduleSchema = new mongoose.Schema({
   monday: [{ 
-    startTime: { type: String, required: true },
-    endTime: { type: String, required: true }
+    startTime: { type: Date, required: true },
+    endTime: { type: Date, required: true }
   }],
   tuesday: [{ 
-    startTime: { type: String, required: true },
-    endTime: { type: String, required: true }
+    startTime: { type: Date, required: true },
+    endTime: { type: Date, required: true }
   }],
   wednesday: [{ 
-    startTime: { type: String, required: true },
-    endTime: { type: String, required: true }
+    startTime: { type: Date, required: true },
+    endTime: { type: Date, required: true }
   }],
   thursday: [{ 
-    startTime: { type: String, required: true },
-    endTime: { type: String, required: true }
+    startTime: { type: Date, required: true },
+    endTime: { type: Date, required: true }
   }],
   friday: [{ 
-    startTime: { type: String, required: true },
-    endTime: { type: String, required: true }
+    startTime: { type: Date, required: true },
+    endTime: { type: Date, required: true }
   }],
   saturday: [{ 
-    startTime: { type: String, required: true },
-    endTime: { type: String, required: true }
+    startTime: { type: Date, required: true },
+    endTime: { type: Date, required: true }
   }],
   sunday: [{ 
-    startTime: { type: String, required: true },
-    endTime: { type: String, required: true }
+    startTime: { type: Date, required: true },
+    endTime: { type: Date, required: true }
   }],
 });
 
