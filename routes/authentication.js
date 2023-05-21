@@ -4,7 +4,9 @@ const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-router.post('/login', async (req, res) => {
+const userLog = {};
+
+userLog.login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -27,6 +29,6 @@ router.post('/login', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
   }
-});
+};
 
-module.exports = router;
+module.exports = userLog;
