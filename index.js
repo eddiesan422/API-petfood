@@ -4,15 +4,16 @@ const { mongoose } = require("./database");
 
 const app = express();
 
-//SETTINGS
+// SETTINGS
 app.set("port", process.env.PORT || 3000);
 
-//MIDDLEWARES:
+// MIDDLEWARES
 app.use(express.json());
 app.use(cors());
 
-//ROUTES:
+// ROUTES
 app.use("/api/users", require("./routes/user.routes"));
+
 
 app.listen(app.get("port"), () => {
   console.log("Server on port: ", app.get("port"));
