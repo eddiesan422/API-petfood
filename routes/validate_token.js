@@ -1,17 +1,22 @@
 const jwt = require('jsonwebtoken');
 
 const verifyToken = (req, res, next) => {
-  const token = req.header('access-token');
-  if (!token) {
-    return res.status(401).json({ error: '¡Lo sentimos!, pero no tiene permisos para acceder a esta ruta.' });
-  }
-  try {
-    const verified = jwt.verify(token, process.env.SECRET);
-    req.user = verified;
-    next(); // Si el token es correcto, se puede continuar
-  } catch (error) {
-    res.status(401).json({ error: 'El token no es válido o ha expirado' });
-  }
+    if (!req.headers.authorization) {
+        return res.status(401).send('Unauthorized request');
+    }
+
+    const token = req.headers.authorization.split(' ')[1];
+
+    if (token === 'null') {
+        return res.status(401).send('Unauthorized request');
+    }
+
+    const payload = jwt.verify(token, process.env.SECRET);
+
+    req.userId = payload._id;
+    console.log(payload.id);
+    next();
+
 };
 
 module.exports = verifyToken;

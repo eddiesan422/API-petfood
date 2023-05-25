@@ -1,5 +1,7 @@
 const userCtrl = {};
 const User = require("../models/User");
+const jwt = require("jsonwebtoken");
+let {token} = require("morgan");
 
 //Controllers
 userCtrl.createUser = async (req, res) => {
@@ -14,7 +16,7 @@ userCtrl.createUser = async (req, res) => {
             feedingSchedule: userData.pet.feedingSchedule
         }
     });
-    newUser.password=await newUser.encryptPassword(newUser.password);
+    newUser.password = await newUser.encryptPassword(newUser.password);
 
     const savedUser = await newUser.save();
     res.json({
@@ -28,9 +30,17 @@ userCtrl.getUsers = async (req, res) => {
 };
 
 userCtrl.getUser = async (req, res) => {
-    const {id} = req.params;
-    const UserById = await User.findById(id);
-    res.json(UserById);
+    try {
+        const {id} = req.params;
+        const UserById = await User.findById(id);
+
+        res.json(UserById);
+    } catch (error) {
+        res.status(500).json({
+            message: "User not found",
+            error: error.message
+        })
+    }
 };
 
 userCtrl.receiveDetectionData = (req, res) => {
@@ -41,5 +51,13 @@ userCtrl.receiveDetectionData = (req, res) => {
         .status(200)
         .json({message: "Datos de detección recibidos correctamente"});
 };
+
+userCtrl.getPrivateSchedule = (req, res) => {
+    res.json([
+        {
+            hola: 2
+        }
+    ]);
+}
 
 module.exports = userCtrl;

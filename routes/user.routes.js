@@ -9,9 +9,10 @@ const userLog = require("./authentication");
 router.post('/detection', userCtrl.receiveDetectionData);
 
 //Routes:
-router.post('/create-user', userCtrl.createUser);
 router.get("/", userCtrl.getUsers);
+router.get('/private',verifyToken, userCtrl.getPrivateSchedule);
 router.get('/:id', userCtrl.getUser);
+router.post('/create-user', userCtrl.createUser);
 router.post('/login', userLog.login);
 
 module.exports = router;
