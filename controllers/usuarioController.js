@@ -52,12 +52,11 @@ userCtrl.receiveDetectionData = (req, res) => {
         .json({message: "Datos de detección recibidos correctamente"});
 };
 
-userCtrl.getPrivateSchedule = (req, res) => {
-    res.json([
-        {
-            hola: 2
-        }
-    ]);
+userCtrl.getPrivateSchedule = async (req, res) => {
+    const userId=req.userId;
+    const user= await User.findById(userId);
+
+    res.json(user);
 }
 
 module.exports = userCtrl;

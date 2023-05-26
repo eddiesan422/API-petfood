@@ -1,22 +1,31 @@
 const jwt = require('jsonwebtoken');
 
 const verifyToken = (req, res, next) => {
-    if (!req.headers.authorization) {
+    // Obtener el token de autenticación del encabezado de la solicitud
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).send('Unauthorized request');
     }
 
-    const token = req.headers.authorization.split(' ')[1];
+    const token = authHeader.substring(7); // Ignorar 'Bearer ' y obtener solo el token
 
-    if (token === 'null') {
+    try {
+        // Verificar y decodificar el token
+        const payload = jwt.verify(token, process.env.SECRET);
+
+        // Almacenar el ID de usuario en req.userId
+        req.userId = payload._id;
+
+        next();
+    } catch (error) {
+        // Manejar errores de verificación de token
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).send('Token expired');
+        }
+
+        // Otros posibles errores, como token inválido o firma incorrecta
         return res.status(401).send('Unauthorized request');
     }
-
-    const payload = jwt.verify(token, process.env.SECRET);
-
-    req.userId = payload._id;
-    console.log(payload.id);
-    next();
-
 };
 
 module.exports = verifyToken;
