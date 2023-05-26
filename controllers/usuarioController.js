@@ -43,20 +43,33 @@ userCtrl.getUser = async (req, res) => {
     }
 };
 
-userCtrl.receiveDetectionData = (req, res) => {
+userCtrl.receiveDetectionData = async (req, res) => {
     const detectionData = req.body;
     console.log("Datos de detección recibidos:", detectionData[0].label);
-
+    const userId=req.userId;
+    const user=await User.findById(userId);
+    console.log(user.pet.feedingSchedule.friday[0]);
     res
         .status(200)
-        .json({message: "Datos de detección recibidos correctamente"});
+        .json({message: "Datos de detección recibidos correctamente backend"});
 };
 
 userCtrl.getPrivateSchedule = async (req, res) => {
-    const userId=req.userId;
-    const user= await User.findById(userId);
+    try {
+        const userId = req.userId;
+        const user = await User.findById(userId);
 
-    res.json(user);
+        if (!user) {
+            // El usuario no fue encontrado
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        res.json(user);
+    } catch (error) {
+        // Error al buscar el usuario
+        res.status(500).json({ message: 'Error al buscar el usuario' });
+    }
 }
+
 
 module.exports = userCtrl;

@@ -6,7 +6,7 @@ const userCtrl = require("../controllers/usuarioController");
 const userLog = require("./authentication");
 
 //Ruta para recibir los datos de detección desde el front
-router.post('/detection', userCtrl.receiveDetectionData);
+router.post('/detection', verifyToken, userCtrl.receiveDetectionData);
 
 //Routes:
 router.get("/", userCtrl.getUsers);

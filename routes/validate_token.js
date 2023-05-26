@@ -14,7 +14,7 @@ const verifyToken = (req, res, next) => {
         const payload = jwt.verify(token, process.env.SECRET);
 
         // Almacenar el ID de usuario en req.userId
-        req.userId = payload._id;
+        req.userId = payload.id;
 
         next();
     } catch (error) {
