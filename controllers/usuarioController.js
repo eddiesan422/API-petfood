@@ -1,4 +1,5 @@
 const CronJob = require('cron').CronJob;
+const {Board, Servo} = require("johnny-five");
 const userCtrl = {};
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
@@ -51,42 +52,54 @@ userCtrl.receiveDetectionData = async (req, res) => {
     const user = await User.findById(userId);
 
     // Obtén los horarios desde el objeto del usuario (ejemplo para el horario del viernes)
-    let startTime = user.pet.feedingSchedule.friday[0].startTime;
-    let endTime = user.pet.feedingSchedule.friday[0].endTime;
+    let startTime = user.pet.feedingSchedule.tuesday[0].startTime;
+    let endTime = user.pet.feedingSchedule.tuesday[0].endTime;
 
-    console.log(startTime, endTime); // Verificación de los horarios
+    console.log('Horarios del usuario: ', startTime, endTime); // Verificación de los horarios
 
     // Iniciar el cronjob solo si los horarios están definidos
     if (startTime && endTime) {
         startCronJob(startTime, endTime);
     }
 
-    res.status(200).json({ message: "Datos de detección recibidos correctamente en el backend" });
+    res.status(200).json({message: "Datos de detección recibidos correctamente en el backend"});
 };
 
-function startCronJob(startTime, endTime){
-    const job = new CronJob(
-        '*/2 * * * * *', // Ejecutar cada 2 segundos
-        function() {
-            const currentTime = new Date();
-            const start = new Date();
-            const end = new Date();
-            const [startHours, startMinutes] = startTime.split(':');
-            const [endHours, endMinutes] = endTime.split(':');
+function startCronJob(startTime, endTime) {
 
-            start.setHours(startHours, startMinutes, 0);
-            end.setHours(endHours, endMinutes, 0);
+    const board = new Board({
+        port: "COM3",
+    });
 
-            if (currentTime >= start && currentTime <= end) {
-                console.log('Este mensaje se mostrará cada 2 segundos dentro del horario especificado');
+    board.on("ready", () => {
+        const servo = new Servo(13); // Conectado a pin 13
+        let counter = 0;
+
+        servo.to(0); // Mueve el servomotor a 0 grados al inicio
+
+        const job = new CronJob("*/5 * * * * *", function () {
+            const currentTime = new Date().toLocaleTimeString([], {
+                hour12: false,
+                hour: "2-digit",
+                minute: "2-digit",
+            });
+
+            if (currentTime >= startTime && currentTime <= endTime && counter < 3) {
+                servo.to(20); // Mueve el servomotor a 20 grados
+                setTimeout(() => {
+                    servo.to(0); // Vuelve a la posición de 0 grados después de 1 segundo
+                }, 1000);
+                counter++;
             }
-        },
-        null,
-        true,
-        'America/Los_Angeles'
-    );
+        });
 
-    job.start();
+        // Inicia la ejecución del job
+        job.start();
+    });
+
+    board.on("error", (err) => {
+        console.log("Error: ", err);
+    });
 }
 
 userCtrl.getPrivateSchedule = async (req, res) => {
@@ -96,13 +109,13 @@ userCtrl.getPrivateSchedule = async (req, res) => {
 
         if (!user) {
             // El usuario no fue encontrado
-            return res.status(404).json({ message: 'Usuario no encontrado' });
+            return res.status(404).json({message: 'Usuario no encontrado'});
         }
 
         res.json(user);
     } catch (error) {
         // Error al buscar el usuario
-        res.status(500).json({ message: 'Error al buscar el usuario' });
+        res.status(500).json({message: 'Error al buscar el usuario'});
     }
 }
 
