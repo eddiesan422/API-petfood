@@ -4,6 +4,9 @@ const userCtrl = {};
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 let {token} = require("morgan");
+const board = new Board({
+    port: "COM3",
+});
 
 //Controllers
 userCtrl.createUser = async (req, res) => {
@@ -46,19 +49,32 @@ userCtrl.getUser = async (req, res) => {
 };
 
 userCtrl.receiveDetectionData = async (req, res) => {
+    let permitir = true;
     const detectionData = req.body;
     console.log("Datos de detección recibidos:", detectionData[0].label);
     const userId = req.userId;
     const user = await User.findById(userId);
 
     // Obtén los horarios desde el objeto del usuario (ejemplo para el horario del viernes)
-    let startTime = user.pet.feedingSchedule.tuesday[0].startTime;
-    let endTime = user.pet.feedingSchedule.tuesday[0].endTime;
+    const dateDays = new Date();
+    const daysOfWeek = {
+        0: 'sunday',
+        1: 'monday',
+        2: 'tuesday',
+        3: 'wednesday',
+        4: 'thursday',
+        5: 'friday',
+        6: 'Saturday'
+    }
+    console.log('Current day of the week', daysOfWeek[dateDays.getDay()]);
+    let startTime = user.pet.feedingSchedule.friday[0].startTime;
+    let endTime = user.pet.feedingSchedule.friday[0].endTime;
 
     console.log('Horarios del usuario: ', startTime, endTime); // Verificación de los horarios
 
     // Iniciar el cronjob solo si los horarios están definidos
-    if (startTime && endTime) {
+    if ((startTime && endTime) && permitir === true) {
+        permitir = false;
         startCronJob(startTime, endTime);
     }
 
@@ -66,10 +82,6 @@ userCtrl.receiveDetectionData = async (req, res) => {
 };
 
 function startCronJob(startTime, endTime) {
-
-    const board = new Board({
-        port: "COM3",
-    });
 
     board.on("ready", () => {
         const servo = new Servo(13); // Conectado a pin 13
@@ -85,7 +97,8 @@ function startCronJob(startTime, endTime) {
             });
 
             if (currentTime >= startTime && currentTime <= endTime && counter < 3) {
-                servo.to(20); // Mueve el servomotor a 20 grados
+                console.log('moviendo');
+                servo.to(90); // Mueve el servomotor a 20 grados
                 setTimeout(() => {
                     servo.to(0); // Vuelve a la posición de 0 grados después de 1 segundo
                 }, 1000);
