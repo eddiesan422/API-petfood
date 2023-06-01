@@ -4,9 +4,6 @@ const userCtrl = {};
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 let {token} = require("morgan");
-const board = new Board({
-    port: "COM3",
-});
 
 //Controllers
 userCtrl.createUser = async (req, res) => {
@@ -54,6 +51,8 @@ userCtrl.receiveDetectionData = async (req, res) => {
     console.log("Datos de detección recibidos:", detectionData[0].label);
     const userId = req.userId;
     const user = await User.findById(userId);
+    let startTime;
+    let endTime;
 
     // Obtén los horarios desde el objeto del usuario (ejemplo para el horario del viernes)
     const dateDays = new Date();
@@ -66,9 +65,46 @@ userCtrl.receiveDetectionData = async (req, res) => {
         5: 'friday',
         6: 'Saturday'
     }
-    console.log('Current day of the week', daysOfWeek[dateDays.getDay()]);
-    let startTime = user.pet.feedingSchedule.friday[0].startTime;
-    let endTime = user.pet.feedingSchedule.friday[0].endTime;
+    day = 'friday';
+    console.log('Current day of the week with variable: ', day);
+    switch (day) {
+        case 'sunday':
+            console.log("hola domingo");
+            startTime = user.pet.feedingSchedule.sunday[0].startTime;
+            endTime = user.pet.feedingSchedule.sunday[0].endTime;
+            break;
+        case 'monday':
+            console.log("hola lunes");
+            startTime = user.pet.feedingSchedule.monday[0].startTime;
+            endTime = user.pet.feedingSchedule.monday[0].endTime;
+            break;
+        case 'tuesday':
+            console.log("hola martes");
+            startTime = user.pet.feedingSchedule.tuesday[0].startTime;
+            endTime = user.pet.feedingSchedule.tuesday[0].endTime;
+            break;
+        case 'wednesday':
+            console.log("hola miércoles");
+            startTime = user.pet.feedingSchedule.wednesday[0].startTime;
+            endTime = user.pet.feedingSchedule.wednesday[0].endTime;
+            break;
+        case 'thursday':
+            console.log("hola jueves");
+            startTime = user.pet.feedingSchedule.thursday[0].startTime;
+            endTime = user.pet.feedingSchedule.thursday[0].endTime;
+            break;
+        case 'friday':
+            console.log("hola viernes");
+            startTime = user.pet.feedingSchedule.friday[0].startTime;
+            endTime = user.pet.feedingSchedule.friday[0].endTime;
+            break;
+        case 'Saturday':
+            console.log("hola sábado");
+            startTime = user.pet.feedingSchedule.saturday[0].startTime;
+            endTime = user.pet.feedingSchedule.saturday[0].endTime;
+            break;
+
+    }
 
     console.log('Horarios del usuario: ', startTime, endTime); // Verificación de los horarios
 
@@ -82,6 +118,10 @@ userCtrl.receiveDetectionData = async (req, res) => {
 };
 
 function startCronJob(startTime, endTime) {
+
+    const board = new Board({
+        port: "COM3",
+    });
 
     board.on("ready", () => {
         const servo = new Servo(13); // Conectado a pin 13
